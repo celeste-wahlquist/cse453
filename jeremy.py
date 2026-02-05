@@ -9,7 +9,7 @@ def fix_slashes(path):
     return path
 
 # Split path into parts seperated by the backslash then compare parts
-# . or .. will determine to 
+# . or .. will determine to ignore or skip
 def test(path):
 
     skip = 0
@@ -74,4 +74,5 @@ def main():
 
 
 if __name__ == '__main__':
+
     main()
