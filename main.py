@@ -1,5 +1,4 @@
 import unicodedata
-from ftplib import print_line
 
 #establish a map of example homographs
 HOMOGRAPH_MAP = {
