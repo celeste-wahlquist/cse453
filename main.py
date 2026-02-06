@@ -1,64 +1,88 @@
-# This is a sample Python script.
+import unicodedata
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
-filepath_pairs = {
-    1: ("/var/log/system/auth.log",
-        "/var/log/system/аuth.log"),  # HOMOGRAPH (Cyrillic 'а' instead of Latin 'a')
-
-    2: ("/usr/local/bin/cleanup.sh",
-        "/usr/local/bin/cleаnup.sh"),  # HOMOGRAPH (Cyrillic 'а')
-
-    3: ("/home/user/docs/summary.pdf",
-        "/home/user/docs/summаry.pdf"),  # HOMOGRAPH (Cyrillic 'а')
-
-    4: ("/tmp/cache/session01.dat",
-        "/tmp/cache/sessiоn01.dat"),  # HOMOGRAPH (Cyrillic 'о' instead of Latin 'o')
-
-    5: ("/opt/app/config/settings.json",
-        "/opt/app/config/settіngs.json"),  # HOMOGRAPH (Cyrillic 'і' instead of Latin 'i')
-
-    6: ("/srv/www/public/index.html",
-        "/srv/www/public/indеx.html"),  # HOMOGRAPH (Cyrillic 'е' instead of Latin 'e')
-
-    # ---- Non-homograph pairs (actually different) ----
-    7: ("/home/admin/scripts/deploy.sh",
-        "/home/admin/scripts/backup.sh"),  # NOT homograph (different filenames)
-
-    8: ("/data/archive/backup_2025.zip",
-        "/data/archive/backup_2024.zip"),  # NOT homograph (different year)
-
-    9: ("/mnt/storage/media/video.mp4",
-        "/mnt/storage/media/audio.mp3"),  # NOT homograph (different file types)
-
-    10: ("/etc/nginx/nginx.conf",
-         "/etc/apache2/httpd.conf"),  # NOT homograph (different services)
+#establish a map of example homographs
+HOMOGRAPH_MAP = {
+    "а": "a",  # Cyrillic small a
+    "Ь": "b",  # Cyrillic soft sign (looks like b)
+    "с": "c",  # Cyrillic small c
+    "ԁ": "d",  # Cyrillic small d
+    "е": "e",  # Cyrillic small e
+    "ｆ": "f",  # Fullwidth latin f
+    "ɡ": "g",  # Script latin g
+    "һ": "h",  # Cyrillic small shha
+    "і": "i",  # Cyrillic small i
+    "ј": "j",  # Cyrillic small j
+    "ｋ": "k",  # Fullwidth latin k
+    "ⅼ": "l",  # Roman numeral fifty
+    "ｍ": "m",  # Fullwidth latin m
+    "ո": "n",  # Armenian small n
+    "ο": "o",  # Greek small omicron
+    "р": "p",  # Cyrillic small pe
+    "գ": "q",  # Armenian small g
+    "г": "r",  # Cyrillic small ghe
+    "ѕ": "s",  # Cyrillic small dze
+    "ｔ": "t",  # Fullwidth latin t
+    "υ": "u",  # Greek small upsilon
+    "ⅴ": "v",  # Roman numeral five
+    "ԝ": "w",  # Cyrillic small we
+    "х": "x",  # Cyrillic small ha
+    "у": "y",  # Cyrillic small u
 }
 
-def get_filepath_pair():
-    pass
 
+def canonicalize(path):
+    #normalizing the unicode
+    path = unicodedata.normalize("NFKC", path)
+    #if a character in path matches a homograph in our map, replace it with clean char
+    path = "".join(HOMOGRAPH_MAP.get(ch, ch) for ch in path)
 
-def determine_homograph():
-    pass
+    #creating empty list of clean characters
+    #and split the path into pieces depending on '/' position
+    parts = path.split('/')
+    clean_segments = []
+
+    for part in parts:
+        #if we're going up a directory remove the previous directory level from the stack
+        if part == "..":
+            if clean_segments:
+                clean_segments.pop()
+        #addressing teh directory we're in or blank
+        elif part == "." or part == "":
+            continue
+        else:
+            clean_segments.append(part)
+
+    # Reconstruct the given path from the clean_segments
+    return "/" + "/".join(clean_segments)
+
+def is_homograph(p1, p2):
+    return canonicalize(p1) == canonicalize(p2)
+
+def run_tests():
+    forbidden = "/secret/password.txt"
+    # Homograph tests, different strings same file
+    homographs = ["/secret/./password.txt", "/secret/data/../password.txt", "/ѕecret/password.txt"]
+
+    print("--- Testing Homographs ---")
+    for test in homographs:
+        result = is_homograph(test, forbidden)
+        print(f"Checking: {test} vs {forbidden} -> Match: {result}")
 
 
 def main():
-    # Use a breakpoint in the code line below to debug your script.
-    pass
+    while True:
+        print("1. Run Test Cases")
+        print("2. Compare Two Paths")
+        print("3. Exit")
+        choice = input("Select an option: ")
+        if choice == '1':
+            run_tests()
+        elif choice == '2':
+            p1 = input("Path 1: ")
+            p2 = input("Path 2: ")
+            print(f"Homographs? {is_homograph(p1, p2)}")
+        elif choice == '3':
+            break
 
-
-
-
-      # Press ⌘F8 to toggle the breakpoint.
-
-
-
-
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
