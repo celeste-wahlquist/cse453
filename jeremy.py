@@ -3,14 +3,14 @@
 
 
 # Convert path to single \ then compare
-def fix_slashes(path):
+def canonicalization(path):
     while "\\\\" in path:
         path = path.replace("\\\\", "\\")
     return path
 
 # Split path into parts seperated by the backslash then compare parts
 # . or .. will determine to ignore or skip
-def test(path):
+def homograph(path):
 
     skip = 0
     actual = []
@@ -44,21 +44,56 @@ def test(path):
 
 
 
-# Add function to compare
-# Add function for intro
-# Add function for test cases
+
+    
+def intro():
+    print("Hi, please enter filepath 1: ")
+    file_path1 = input()
+
+    print("Enter filepath 2: ")
+    file_path2 = input()
+
+    result1 = compare(file_path1)
+    result2 = compare(file_path2)
+
+    # Now compare results
+    if result1 == result2:
+        print("The paths are homographs")
+    else:
+        print("The paths are NOT homographs")
+
+
+
+START = "home\\user\\cse453"
+TARGET = "home\\user\\secret\\password.txt"
+
+def compare(user_input):
+
+    # 1. attach START to users input
+    full = START + "\\" + user_input
+
+    # 2. Canonicalize 
+    new_path = homograph(canonicalization(full))
+
+    print("Filepath:", new_path)
+    
+    return new_path
+
+
 
 def main():
-
+    print("\n\n\n")
+    # Intro function
+    intro()
 
     # Test 1
     same = "..\\\secret\\password.txt"
     print("\n\n\n") # test path
 
-    same = fix_slashes(same)
+    same = canonicalization(same)
     print(same) # get rid of extra slashes
 
-    actual_path = test(same)  # show path
+    actual_path = homograph(same)  # show path
     print("Actual path:", actual_path)
 
 
@@ -66,13 +101,17 @@ def main():
     same = "home\\user\\..\\user\\secret\\password.txt"
     print("\n\n\n") # test path
 
-    same = fix_slashes(same)
+    same = canonicalization(same)
     print(same) # get rid of extra slashes
 
-    actual_path = test(same)  # show path
+    actual_path = homograph(same)  # show path
     print("Actual path:", actual_path)
 
 
-if __name__ == '__main__':
 
+
+
+
+
+if __name__ == '__main__':
     main()
