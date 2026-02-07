@@ -31,13 +31,11 @@ HOMOGRAPH_MAP = {
 
 
 def canonicalize(path):
-    #normalizing the unicode
-    path = unicodedata.normalize("NFKC", path)
     #if a character in path matches a homograph in our map, replace it with clean char
     path = "".join(HOMOGRAPH_MAP.get(ch, ch) for ch in path)
 
-    #creating empty list of clean characters
-    #and split the path into pieces depending on '/' position
+    #creating empty list of clean path segments
+    #and splitting the path into segments depending on '/' position
     parts = path.split('/')
     clean_segments = []
 
@@ -46,16 +44,17 @@ def canonicalize(path):
         if part == "..":
             if clean_segments:
                 clean_segments.pop()
-        #addressing teh directory we're in or blank
+        #ignore if we are addressing teh directory we're in or blank segment
         elif part == "." or part == "":
             continue
         else:
             clean_segments.append(part)
 
-    # Reconstruct the given path from the clean_segments
+    # recreate the given path from the clean_segments
     return "/" + "/".join(clean_segments)
 
 def is_homograph(p1, p2):
+    #compare two filepaths after canonicalizing them
     return canonicalize(p1) == canonicalize(p2)
 
 def run_tests():
