@@ -59,9 +59,18 @@ def is_homograph(p1, p2):
     return canonicalize(p1) == canonicalize(p2)
 
 def run_tests():
-    forbidden = "/secret/password.txt"
+    forbidden = "/secret/data.txt"
     # Homograph tests, different strings same file
-    homographs = ["/secret/./password.txt", "/secret/data/../password.txt", "/ѕecret/password.txt"]
+    homographs = ["/ѕecret/data.txt", "/secret/./data.txt", "/var/../secret/data.txt", "/secret//data.txt"]
+
+    #justifications for those writing the report
+    #the first homograph has a cyrillic 'ѕ' ($U+0455$) instead of Latin 's'.
+    #the second homograph has a redundant '.' which gets ignored by stack logic
+    #the third homograph uses '..' so the stack pops that off moving us from var to root before entering secret
+    #the fourth has empty segments '//' which the logic ignores to prevent any path errors
+
+    #the test should return true because the canonicalize function converts homograph into true paths before is_homograph compares them
+    #when is_homograph says they are the same, it means canonicalize has successfully weeded out homographs to return a legitimate filepath
 
     print("--- Testing Homographs ---")
     for test in homographs:
