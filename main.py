@@ -2,7 +2,7 @@
 CURRENT_WORKING_DIRECTORY = "/home/user/secret/password"
 FORBIDDEN_FILE = "/home/user/secret/password/secret_data.txt"
 
-
+#bleep blap boop
 def canonicalize(path):
     # if it doesn't start with / then slap one on the front
     if not path.startswith('/'):
