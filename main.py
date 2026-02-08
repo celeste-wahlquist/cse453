@@ -9,8 +9,10 @@ def canonicalize(path):
     if not path.startswith("/"):
         if cwd.endswith("/"):
             path = cwd + path
-        else:
-            path = cwd + "/" + path
+        #not currently needed, but if the cwd was differently formatted (ex. "/home/user/cse453"
+        # the program would have ensured it was properly appended to the front with a separating /
+        # else:
+        #     path = cwd + "/" + pat
 
     #split the path according to '/' position
     parts = path.split('/')
